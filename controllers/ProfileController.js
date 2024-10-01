@@ -5,12 +5,22 @@ const userProfile = async (req, res) => {
 
     try {
         const user = await User.findOne({carnet: body.carnet})
-        console.log(user)
         if(!user) {
             return res.status(404).json({message: "Forbidden"})
         }
+        const additionalData = {
+            visits: 20,
+            readingCount: 12,
+            location: 'ITCA Central'
 
-        res.json({success: true, user: user})
+        };
+
+        const userWithAdditionalData = {
+            ...user.toObject(),
+            ...additionalData
+        };
+
+        res.json({success: true, user: userWithAdditionalData })
     } catch (error) {
         console.error('Error in query:', error);
         res.status(500).json({ mensaje: error.message });
