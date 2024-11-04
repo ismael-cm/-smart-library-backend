@@ -3,6 +3,8 @@ const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 
 const loginRoutes = require('./routes/profileRoutes')
+const userRoutes = require('./routes/userRoutes')
+const {seed} = require('./seeding/seedData')
 
 dotenv.config();
 
@@ -20,7 +22,10 @@ mongoose.connect(process.env.MONGO_URI)
 
 
 app.use('/api', loginRoutes);
+app.use('/api', userRoutes);
 
 app.listen(5000, () => {
     console.log('Servidor escuchando en el puerto 5000');
 })
+
+//seed()
