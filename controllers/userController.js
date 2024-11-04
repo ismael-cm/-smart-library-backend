@@ -140,4 +140,23 @@ const changePassword = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser, updateUser, changePassword };
+const getProfile = async (req, res) => {
+    try {
+        // Acceder a la información del usuario autenticado
+        const userId = req.user.id;
+        const userEmail = req.user.email;
+        const userType = req.user.type;
+
+        // Usar `userId` para buscar el perfil del usuario en la base de datos
+        const user = await User.findById(userId).select('-password'); // Excluir la contraseña
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({ message: 'User profile fetched successfully', user });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching user profile', error: error.message });
+    }
+};
+
+module.exports = { registerUser, loginUser, updateUser, changePassword, getProfile };

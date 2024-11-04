@@ -5,9 +5,11 @@ const dotenv = require('dotenv')
 const {seed} = require('./seeding/seedData')
 const loginRoutes = require('./routes/profileRoutes')
 const userRoutes = require('./routes/userRoutes')
+const authRoutes = require('./routes/authRoutes')
 const booksRoutes = require('./routes/bookRoutes')
 const loansRoutes = require('./routes/loanRoutes')
 const reservationsRoutes = require('./routes/reservationRoutes');
+const authenticateToken = require('./middleware/authMiddleware');
 
 dotenv.config();
 
@@ -24,11 +26,12 @@ mongoose.connect(process.env.MONGO_URI)
     })
 
 
+app.use('/api', authRoutes);
 app.use('/api', loginRoutes);
-app.use('/api', userRoutes);
-app.use('/api/books', booksRoutes);
-app.use('/api/loans', loansRoutes);
-app.use('/api/reservations', reservationsRoutes);
+app.use('/api', authenticateToken, userRoutes);
+app.use('/api/books', authenticateToken, booksRoutes);
+app.use('/api/loans', authenticateToken, loansRoutes);
+app.use('/api/reservations', authenticateToken, reservationsRoutes);
 
 
 app.listen(5000, () => {
