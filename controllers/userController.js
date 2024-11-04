@@ -53,15 +53,10 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        console.log('User found, attempting password comparison');
-        console.log('Input password length:', password.length);
-        console.log('Stored hash length:', user.password.length);
 
         const isMatch = await bcrypt.compare(password, user.password);
-        console.log('Password comparison result:', isMatch);
 
         if (!isMatch) {
-            console.log('Password comparison failed');
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
