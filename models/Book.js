@@ -9,6 +9,8 @@ const bookSchema = new mongoose.Schema({
     total_stock: { type: Number, required: true },
     available_stock: { type: Number, required: true },
     available: { type: Boolean, default: true },
+    image: { type: String, required: true }, // URL de la imagen del libro
+    description: { type: String, required: true }, // Descripción del libro
 });
 
 module.exports = mongoose.model('Book', bookSchema);

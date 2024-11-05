@@ -9,6 +9,7 @@ const authRoutes = require('./routes/authRoutes')
 const booksRoutes = require('./routes/bookRoutes')
 const loansRoutes = require('./routes/loanRoutes')
 const reservationsRoutes = require('./routes/reservationRoutes');
+const genreRoutes = require('./routes/genreRoutes');
 const authenticateToken = require('./middleware/authMiddleware');
 
 dotenv.config();
@@ -32,6 +33,7 @@ app.use('/api', authenticateToken, userRoutes);
 app.use('/api/books', authenticateToken, booksRoutes);
 app.use('/api/loans', authenticateToken, loansRoutes);
 app.use('/api/reservations', authenticateToken, reservationsRoutes);
+app.use('/api/genres',authenticateToken, genreRoutes)
 
 
 app.listen(5000, () => {

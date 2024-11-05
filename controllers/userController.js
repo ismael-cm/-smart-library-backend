@@ -8,14 +8,14 @@ const registerUser = async (req, res) => {
     try {
         console.log('Registration attempt for email:', email);
 
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ 
+            $or: [{ email }, { carnet }] 
+          });
         if (existingUser) {
-            console.log('User already exists with this email');
-            return res.status(400).json({ message: 'User already exists' });
+            return res.status(400).json({ message: 'Este estudiante ya posee cuenta' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        console.log('Password hashed successfully');
 
         const newUser = new User({
             name,
@@ -50,14 +50,14 @@ const loginUser = async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) {
             console.log('No user found with this email');
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return res.status(401).json({ message: 'Credenciales Invalidas.' });
         }
 
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return res.status(401).json({ message: 'Credenciales Invalidas.' });
         }
 
         console.log('Password matched, generating token');
@@ -94,7 +94,7 @@ const loginUser = async (req, res) => {
 
 // **Actualizar información del usuario**
 const updateUser = async (req, res) => {
-    const { userId } = req.params;
+    const userId = req.user.id;
     const { name, carnet, email } = req.body;
     try {
         const user = await User.findByIdAndUpdate(
@@ -116,7 +116,10 @@ const updateUser = async (req, res) => {
 
 // **Cambiar la contraseña**
 const changePassword = async (req, res) => {
-    const { userId } = req.params;
+    const userId = req.user.id;
+
+
+
     const { currentPassword, newPassword } = req.body;
     try {
         const user = await User.findById(userId);

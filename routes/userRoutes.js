@@ -8,10 +8,10 @@ const {
 const router = express.Router();
 
 // Ruta para actualizar información del usuario
-router.put('/update/:userId', updateUser);
+router.put('/update', updateUser);
 
 // Ruta para cambiar la contraseña
-router.put('/change-password/:userId', changePassword);
+router.put('/change-password', changePassword);
 router.get('/profile', getProfile);
 
 module.exports = router;
