@@ -77,6 +77,7 @@ const getAvailability = async (req, res) => {
 
 // **Filtros por autor, título, género y fecha de publicación**
 const filterBooks = async (req, res) => {
+    console.log(req.query)
     try {
         const { author, title, genre, publicationDate } = req.query;
 
@@ -132,12 +133,16 @@ const getBooksByGenre = async (req, res) => {
             books = await Book.find({ genre_id: genre }).populate('author_id genre_id');
         } else {
             // Si no se proporciona un género, obtenemos todos los géneros
-            const genres = await Genre.find().limit(limit ? Number(limit) : 10); // Aplicamos el límite
+            const genres = await Genre.find()
+            .limit(limit ? Number(limit) : 10)
+            .sort({ description: 1 });; // Aplicamos el límite
 
             // Obtenemos los libros para cada género
             books = await Promise.all(
                 genres.map(async (genre) => {
-                    const genreBooks = await Book.find({ genre_id: genre._id }).populate('author_id');
+                    const genreBooks = await Book.find({ genre_id: genre._id })
+                    .populate('author_id')
+                    .sort({ title: 1 });
 
                     if(genreBooks.length)
                     return { genre: genre, books: genreBooks };
