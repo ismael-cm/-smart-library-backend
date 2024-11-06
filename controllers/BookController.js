@@ -79,7 +79,7 @@ const getAvailability = async (req, res) => {
 const filterBooks = async (req, res) => {
     console.log(req.query)
     try {
-        const { author, title, genre, publicationDate } = req.query;
+        const { author, title, genre, publicationDate, genre_id } = req.query;
 
         // Crear un objeto de filtros dinámico
         let filterCriteria = {};
@@ -99,6 +99,14 @@ const filterBooks = async (req, res) => {
                 filterCriteria.genre_id = genreData._id;
             }
         }
+
+        if (genre_id) {
+            const genreData = await Genre.findById(genre_id);
+            if (genreData) {
+                filterCriteria.genre_id = genreData._id;
+            }
+        }
+
         if (publicationDate) {
             filterCriteria.publicationDate = new Date(publicationDate);
         }
@@ -108,6 +116,7 @@ const filterBooks = async (req, res) => {
         res.json(books.map(book => ({
             title: book.title,
             isbn: book.isbn,
+            description: book.description,
             image: book.image,
             description: book.description,
             author: book.author_id.name,
