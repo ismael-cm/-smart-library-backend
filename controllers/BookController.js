@@ -117,6 +117,7 @@ const filterBooks = async (req, res) => {
         // Filtrar libros según los criterios
         const books = await Book.find(filterCriteria).populate('author_id genre_id');
         res.json(books.map(book => ({
+            _id: book._id,
             title: book.title,
             isbn: book.isbn,
             description: book.description,
