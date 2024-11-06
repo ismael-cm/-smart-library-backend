@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 
 const {seed} = require('./seeding/seedData')
-const loginRoutes = require('./routes/profileRoutes')
 const userRoutes = require('./routes/userRoutes')
 const authRoutes = require('./routes/authRoutes')
 const booksRoutes = require('./routes/bookRoutes')
@@ -28,7 +27,6 @@ mongoose.connect(process.env.MONGO_URI)
 
 
 app.use('/api', authRoutes);
-app.use('/api', loginRoutes);
 app.use('/api', authenticateToken, userRoutes);
 app.use('/api/books', authenticateToken, booksRoutes);
 app.use('/api/loans', authenticateToken, loansRoutes);

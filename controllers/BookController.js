@@ -1,6 +1,9 @@
 const Book = require('../models/Book');
 const Author = require('../models/Author');
 const Genre = require('../models/Genre');
+const Reservation = require('../models/Reservation')
+const { hasExistingLoan } = require('./LoanController')
+const { calculateBookAvailabilityDate } = require('./ReservationController')
 
 // **Búsqueda avanzada de materiales bibliográficos**
 const advancedSearch = async (req, res) => {
@@ -167,5 +170,51 @@ const getBooksByGenre = async (req, res) => {
     }
 };
 
+// ** Book by id **
+const getBookById = async (req, res) => {
+    const { id } = req.params; // Obtener el ID desde los parámetros de la URL
+    const userId = req.user.id;
+    
 
-module.exports = { advancedSearch, getAvailability, filterBooks, getBooksByGenre };
+    try {
+        // Buscar el libro por su ID y llenar datos de autor y género
+        const book = await Book.findById(id).populate('author_id genre_id');
+        
+        if (!book) {
+            return res.status(404).json({ message: 'Book not found' });
+        }
+
+        console.log('getBookid')
+        console.log(book._id.toString() )
+        console.log(userId)
+        console.log(await calculateBookAvailabilityDate(book._id.toString()))
+
+        const reservation = await Reservation.findOne({
+            book_id: book._id.toString(),
+            user_id: userId,
+            status: 'Pending'
+        });
+
+        // Enviar una respuesta con los detalles del libro
+        res.json({
+            _id: book._id,
+            title: book.title,
+            isbn: book.isbn,
+            image: book.image,
+            description: book.description,
+            author: book.author_id.name,
+            genre: book.genre_id.description,
+            total_stock: book.total_stock,
+            available_stock: book.available_stock,
+            isAvailable: book.available_stock > 0,
+            hasAlreadyThisBook: await hasExistingLoan(userId, book._id.toString()) ? true : false,
+            availabilityDate: await calculateBookAvailabilityDate(book._id.toString()),
+            reservation
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving book by ID', error: error.message });
+    }
+};
+
+
+module.exports = { advancedSearch, getAvailability, filterBooks, getBooksByGenre, getBookById };

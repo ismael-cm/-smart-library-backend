@@ -42,11 +42,24 @@ const checkBoockStock = async (bookId, book) => {
 
 // **Crear un nuevo préstamo**
 const createLoan = async (req, res) => {
+    console.log('/loan/create')
+    console.log(req.body)
     try {
         const { userId, bookId, days } = req.body;
         
         // Primero, actualizar reservas expiradas
         await checkExpiredReservations();
+
+        const existingLoan = await hasExistingLoan(userId, bookId);
+
+        if(existingLoan) {
+            return res.status(400).json({ message: 'El usuario ya tiene este libro prestado'})
+        }
+
+        const overdueLoan = await hasOverdueLoan(userId);
+        if(overdueLoan) {
+            return res.status(400).json({ message: 'Tiene una devolución pendiente. Devuelve el libro antes de prestar otro'})
+        }
 
         // Verificar disponibilidad del libro
         const book = await Book.findById(bookId);
@@ -54,6 +67,9 @@ const createLoan = async (req, res) => {
             book_id: bookId,
             actual_return_date: null
         });
+        if(!book) {
+            return res.status(400).json({ message: 'El libro que quieres prestar no existe'})
+        }
 
         // Procesar préstamo con reserva si es necesario
         const reservationResult = await processLoanWithReservation(userId, bookId);
@@ -142,4 +158,4 @@ const getLoansByUser = async (req, res) => {
     }
 };
 
-module.exports = { createLoan, returnBook, getAllLoans, getLoansByUser };
+module.exports = { createLoan, returnBook, getAllLoans, getLoansByUser, hasExistingLoan };
