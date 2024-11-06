@@ -140,7 +140,8 @@ const returnBook = async (req, res) => {
 // **Listar todos los préstamos**
 const getAllLoans = async (req, res) => {
     try {
-        const loans = await Loan.find().populate('user_id book_id');
+        const userId = req.user.id;
+        const loans = await Loan.find({ user_id: userId }).populate('user_id book_id');
         res.json(loans);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching loans', error: error.message });

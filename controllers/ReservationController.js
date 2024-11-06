@@ -155,7 +155,8 @@ const processLoanWithReservation = async (userId, bookId) => {
 // **Obtener reservas por usuario**
 const getReservationsByUser = async (req, res) => {
     try {
-        const { userId } = req.params;
+        const userId = req.user.id;
+
         const reservations = await Reservation.find({ user_id: userId }).populate('book_id');
         res.json(reservations);
     } catch (error) {

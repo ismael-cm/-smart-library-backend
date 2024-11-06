@@ -10,7 +10,7 @@ const {
 const router = express.Router();
 
 router.post('/create', createReservation); // Crear una nueva reserva
-router.get('/user/:userId', getReservationsByUser); // Obtener reservas por usuario
+router.get('/user', getReservationsByUser); // Obtener reservas por usuario
 router.get('/book/:bookId', getReservationsByBook); // Obtener reservas por libro
 router.put('/update-status', updateReservationStatus); // Actualizar el estado de la reserva
 router.get('/book/:bookId/availability-date', getBookAvailabilityDate);
