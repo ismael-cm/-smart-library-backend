@@ -8,7 +8,7 @@ const {
 const router = express.Router();
 
 // Ruta para actualizar información del usuario
-router.put('/update', updateUser);
+router.put('/update/:id', updateUser);
 
 // Ruta para cambiar la contraseña
 router.put('/change-password', changePassword);

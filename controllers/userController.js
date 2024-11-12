@@ -65,7 +65,7 @@ const loginUser = async (req, res) => {
             { 
                 id: user._id, 
                 type: user.type,
-                email: user.email 
+                email: user.email
             }, 
             process.env.JWT_SECRET || 'secretKey',
             { 
@@ -81,6 +81,7 @@ const loginUser = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
+                carnet: user.carnet,
                 type: user.type
             }
         });
@@ -94,21 +95,21 @@ const loginUser = async (req, res) => {
 
 // **Actualizar información del usuario**
 const updateUser = async (req, res) => {
-    const userId = req.user.id;
+    const { id } = req.params;
     const { name, carnet, email } = req.body;
     try {
-        const user = await User.findByIdAndUpdate(
-            userId,
-            { name, carnet, email },
-            { new: true } // Devolver el usuario actualizado
+        const userUpdated = await User.findByIdAndUpdate(
+            id,
+            { name, carnet, email }
+            //{ new: true } // Devolver el usuario actualizado
         );
-        if (!user) {
+        if (!userUpdated) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const userResponse = user.toObject();
-        delete userResponse.password;
-        res.json({ message: 'User updated successfully', userResponse });
+        const user = userUpdated.toObject();
+        delete user.password;
+        res.json({ message: 'User updated successfully', user });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
