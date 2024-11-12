@@ -131,7 +131,13 @@ const returnBook = async (req, res) => {
         loan.actual_return_date = new Date();
         await loan.save();
 
-        res.json({ message: 'Book returned successfully', loan });
+        //res.json({ message: 'Book returned successfully', loan });
+
+        res.status(200).json({
+            success: true,
+            loan: loan,
+        });
+
     } catch (error) {
         res.status(500).json({ message: 'Error returning book', error: error.message });
     }
@@ -142,11 +148,45 @@ const getAllLoans = async (req, res) => {
     try {
         const userId = req.user.id;
         const loans = await Loan.find({ user_id: userId }).populate('user_id book_id');
+        
         res.json(loans);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching loans', error: error.message });
     }
 };
+
+const getPendingLoans = async (req, res) => {
+    try {
+        const loans = await Loan.find({ 
+            actual_return_date: { $exists: false } ,
+            book_id: { $ne: null }
+        })
+            .populate({
+                path: 'user_id',
+                select: 'name email'
+            })
+            .populate({
+                path: 'book_id',
+                select: 'title image'
+            });
+
+        //res.json(loans);
+        res.status(200).json({
+            success: true,
+            loans: loans,
+        });
+    } catch (error) {
+        console.error('Error fetching pending loans:', error.message);
+
+        // Respuesta de error en caso de fallo
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching pending loans',
+            error: error.message,
+        });
+    }
+};
+
 
 // **Obtener préstamos por usuario**
 const getLoansByUser = async (req, res) => {
@@ -159,4 +199,4 @@ const getLoansByUser = async (req, res) => {
     }
 };
 
-module.exports = { createLoan, returnBook, getAllLoans, getLoansByUser, hasExistingLoan };
+module.exports = { createLoan, returnBook, getAllLoans, getLoansByUser, hasExistingLoan, getPendingLoans };
